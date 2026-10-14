@@ -1,0 +1,43 @@
+name: Deploy
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  # 💡 連続でプッシュした際に古いデプロイジョブを自動キャンセルし、
+  # バージョンの先祖返りや無駄なリソース消費を防ぐため true を推奨します。
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+      
+      # 💡 開発環境と本番環境のバージョンを完全に一致させるため、npm install ではなく npm ci を推奨します。
+      - run: npm ci
+      
+      - run: npx blume build
+      
+      # 💡 Pages用の基本設定（パスの自動解決など）を行う公式アクションを挟むとより確実です。
+      - uses: actions/configure-pages@v5
+      
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist
+      - uses: actions/deploy-pages@v4
+        id: deployment

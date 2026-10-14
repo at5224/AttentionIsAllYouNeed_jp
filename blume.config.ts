@@ -9,7 +9,7 @@ export default defineConfig({
 
   deployment: {
     // ⭕️ GitHub Pages（本番）の時は "/Blume"、ローカルの時は空文字または未指定（ルート）にします
-    base: isProd ? "/Blume" : "", 
+    base: isProd ? "/AttentionIsAllYouNeed_jp" : "", 
 
     // ⭕️ GitHub Pages（本番）の時は完全なURL、ローカルの時はローカルサーバーのURLにします
     site: isProd 
